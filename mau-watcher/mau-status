@@ -1,0 +1,32 @@
+#!/bin/bash
+# https://github.com/rtholmes/rthbin
+# version 2026-10-04
+#
+# Reports whether the watcher is running and paused/active, and shows the
+# last few kills from the log.
+
+APP_DIR="$HOME/Library/Application Support/mau-watcher"
+PLIST="$HOME/Library/LaunchAgents/com.rtholmes.mauwatcher.plist"
+LABEL="com.rtholmes.mauwatcher"
+
+# launchctl list <label> describes the agent if it is loaded, and includes a
+# PID line only while its process is actually running.
+if ! info="$(launchctl list "$LABEL" 2>/dev/null)"; then
+    echo "Watcher: NOT loaded (try: launchctl load \"$PLIST\")"
+elif echo "$info" | grep -q '"PID" ='; then
+    echo "Watcher: running"
+else
+    echo "Watcher: loaded but not running (launchd should restart it within a few seconds)"
+fi
+
+if [ -f "$APP_DIR/paused" ]; then
+    echo "State: paused"
+else
+    echo "State: active (will kill Microsoft AutoUpdate on sight)"
+fi
+
+if [ -f "$APP_DIR/watcher.log" ]; then
+    echo ""
+    echo "Recent activity:"
+    tail -n 5 "$APP_DIR/watcher.log"
+fi

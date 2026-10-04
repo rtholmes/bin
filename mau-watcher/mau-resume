@@ -1,0 +1,9 @@
+#!/bin/bash
+# https://github.com/rtholmes/rthbin
+# version 2026-10-04
+#
+# Resumes the Microsoft AutoUpdate watcher after a pause.
+
+APP_DIR="$HOME/Library/Application Support/mau-watcher"
+rm -f "$APP_DIR/paused"
+echo "mau-watcher resumed. Microsoft AutoUpdate will be killed on sight again."

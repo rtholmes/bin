@@ -1,0 +1,10 @@
+#!/bin/sh
+# https://github.com/rtholmes/rthbin
+# version 2015-03-12
+#
+# Opens the given folders in Finder, or the current folder when none is given.
+#
+# Usage: fh [folder...]
+
+[ $# -gt 0 ] || set -- .
+exec open -a Finder "$@"

@@ -1,0 +1,80 @@
+#!/bin/sh
+# https://github.com/rtholmes/rthbin
+# version 2020-03-01
+#
+# Opens an app by a short alias, or by its name, and passes any further
+# arguments on to open. So "o vsc ." opens the current folder in Visual Studio
+# Code, and "o chrome https://example.com" opens that page in Chrome.
+#
+# Usage:
+#   o <alias or app name> [files, URLs, or options for open]
+#   o -l        list the aliases
+#   o -h        show this help
+#
+# Neither aliases nor app names are case sensitive: o vsc, o VSC, and o Vsc
+# all do the same thing, and o preview opens Preview. Aliases are only for
+# shortening a name. Two are built in, vsc for Visual Studio Code and chrome
+# for Google Chrome. Add your own by setting O_ALIASES in your shell profile
+# (~/.zshrc) to name=App pairs separated by semicolons or newlines, such as:
+#
+#   export O_ALIASES="ff=Firefox;slack=Slack;word=Microsoft Word"
+#
+# An alias in O_ALIASES overrides a built-in one with the same name.
+
+builtin_aliases="
+vsc=Visual Studio Code
+chrome=Google Chrome
+"
+
+# Every alias, one name=App per line, with the user's first so that they win.
+aliases="$(printf '%s\n%s\n' "${O_ALIASES:-}" "$builtin_aliases" | tr ';' '\n' | grep '=')"
+
+# Prints the app for alias $1, ignoring case, or nothing if there is none.
+app_for() {
+	printf '%s\n' "$aliases" | awk -F= -v want="$1" '
+		BEGIN { want = tolower(want) }
+		{
+			name = tolower($1)
+			gsub(/^[ \t]+|[ \t]+$/, "", name)
+			if (name != want) next
+			app = $0
+			sub(/^[^=]*=/, "", app)
+			gsub(/^[ \t]+|[ \t]+$/, "", app)
+			print app
+			exit
+		}'
+}
+
+case "${1:-}" in
+"")
+	sed -n '2,/^$/p' "$0" | sed -e '/^$/d' -e 's/^# \{0,1\}//' >&2
+	exit 2
+	;;
+-h | --help)
+	sed -n '2,/^$/p' "$0" | sed -e '/^$/d' -e 's/^# \{0,1\}//'
+	exit 0
+	;;
+-l | --list)
+	printf '%s\n' "$aliases" | awk -F= '
+		{
+			name = tolower($1)
+			gsub(/^[ \t]+|[ \t]+$/, "", name)
+			if (name in seen) next
+			seen[name] = 1
+			app = $0
+			sub(/^[^=]*=/, "", app)
+			gsub(/^[ \t]+|[ \t]+$/, "", app)
+			printf "%-10s %s\n", name, app
+		}'
+	exit 0
+	;;
+esac
+
+name="$1"
+shift
+app="$(app_for "$name")"
+[ -n "$app" ] || app="$name"
+if ! open -a "$app" "$@"; then
+	echo "o -l lists the aliases, and o -h says how to add one." >&2
+	exit 1
+fi

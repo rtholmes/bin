@@ -1,0 +1,12 @@
+#!/bin/bash
+# https://github.com/rtholmes/rthbin
+# version 2026-10-04
+#
+# Pauses the Microsoft AutoUpdate watcher. Run this when you want to let
+# Office update itself, and mau-resume when you're done.
+
+APP_DIR="$HOME/Library/Application Support/mau-watcher"
+mkdir -p "$APP_DIR"
+touch "$APP_DIR/paused"
+echo "mau-watcher paused. Microsoft AutoUpdate will be left alone."
+echo "Run mau-resume when you're done updating."
