@@ -5,7 +5,7 @@ you too. Everything here is under the MIT license.
 
 | Tool | What it does | Runs on |
 |---|---|---|
-| [`repoStatus`](repoStatus) | Reports, pulls, or pushes every git repo in a folder at once | macOS, Linux |
+| [`rst`](rst) | Repo status: reports, pulls, or pushes every git repo in a folder at once | macOS, Linux |
 | [`o`](o) | Opens an app by a short alias: `o vsc .`, `o chrome example.com` | macOS |
 | [`fh`](fh) | Opens a folder in Finder: `fh`, `fh ~/Downloads` | macOS |
 | [`mau-watcher/`](mau-watcher/) | Stops the Microsoft AutoUpdate popup from appearing | macOS |
@@ -23,23 +23,24 @@ Then open a new terminal tab. The one exception is `mau-watcher`, which runs
 in the background and so has its own installer; see
 [its README](mau-watcher/README.md).
 
-## repoStatus
+## rst
 
-Run it inside a git repo and it works on that repo. Run it in a folder of
-repos, such as `~/dev`, and it works on every repo directly inside it.
+`rst` is short for repo status. Run it inside a git repo and it works on that
+repo. Run it in a folder of repos, such as `~/dev`, and it works on every repo
+directly inside it.
 
 ```
-repoStatus              status of each repo, from what git already knows
-repoStatus -f           fetch first, so the ahead and behind counts are current
-repoStatus pull         fast-forward each repo that has an upstream
-repoStatus push         push each repo with commits its upstream does not have
-repoStatus help         everything else
+rst              status of each repo, from what git already knows
+rst -f           fetch first, so the ahead and behind counts are current
+rst pull         fast-forward each repo that has an upstream
+rst push         push each repo with commits its upstream does not have
+rst help         everything else
 ```
 
 It needs git 2.11 or newer. Fetches, pulls, and pushes run a few at a time,
 nothing ever prompts for a password, and a host that does not answer is
 reported while the others carry on. The smoke test,
-[`test/repoStatus-test.sh`](test/repoStatus-test.sh), builds throwaway repos
+[`test/rst-test.sh`](test/rst-test.sh), builds throwaway repos
 for every situation it reports and checks the output; run it after changing
 the script.
 

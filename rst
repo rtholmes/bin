@@ -2,20 +2,20 @@
 # https://github.com/rtholmes/rthbin
 # version 2026-10-01
 #
-# Reports, pulls, or pushes git repos. Run inside a repo, it works on that
-# repo. Run anywhere else, it works on every repo directly inside the current
-# directory. Directories given as arguments are used instead of the current
-# directory, each in the same way, with a heading for each when there are
-# several.
+# rst, for repo status, reports, pulls, or pushes git repos. Run inside a repo,
+# it works on that repo. Run anywhere else, it works on every repo directly
+# inside the current directory. Directories given as arguments are used instead
+# of the current directory, each in the same way, with a heading for each when
+# there are several.
 #
 # Usage:
-#   repoStatus              status of each repo, from what git already knows
-#   repoStatus -f           fetch first, so the ahead and behind counts are current
-#   repoStatus pull         fast-forward each repo that has an upstream
-#   repoStatus push         push each repo with commits its upstream does not have
-#   repoStatus push -y      push without asking first
-#   repoStatus -f ~/a ~/b   any command, for ~/a and ~/b instead of the current directory
-#   repoStatus version      the date of this copy of the script
+#   rst              status of each repo, from what git already knows
+#   rst -f           fetch first, so the ahead and behind counts are current
+#   rst pull         fast-forward each repo that has an upstream
+#   rst push         push each repo with commits its upstream does not have
+#   rst push -y      push without asking first
+#   rst -f ~/a ~/b   any command, for ~/a and ~/b instead of the current directory
+#   rst version      the date of this copy of the script
 #
 # status is the default command. It also names any repo that pull could not
 # fast-forward, and why, and exits non-zero when it finds one. pull uses
@@ -51,7 +51,7 @@ fi
 usage="usage: $(basename "$0") [status] [-f] | pull | push [-y] | help, and optionally directories"
 
 # The command, options, and directories can come in any order, and the command
-# defaults to status, so "repoStatus -f" means "repoStatus status -f".
+# defaults to status, so "rst -f" means "rst status -f".
 cmd=""
 fetch=0
 yes=0
@@ -83,11 +83,11 @@ done
 cmd="${cmd:-status}"
 
 if [ "$cmd" = version ]; then
-	echo "repoStatus $version"
+	echo "rst $version"
 	exit 0
 fi
 if [ "$cmd" = help ]; then
-	echo "repoStatus $version"
+	echo "rst $version"
 	sed -n '2,/^$/p' "$0" | sed -e '/^$/d' -e '/^# version /d' -e 's/^# \{0,1\}//'
 	exit 0
 fi

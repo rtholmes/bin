@@ -2,20 +2,20 @@
 # https://github.com/rtholmes/rthbin
 # version 2026-10-04
 #
-# Smoke test for repoStatus. Builds throwaway repos in a temporary directory,
-# one for each situation repoStatus reports, then checks what status, pull,
+# Smoke test for rst. Builds throwaway repos in a temporary directory,
+# one for each situation rst reports, then checks what status, pull,
 # and push print for them. It needs only git and ssh, and never touches the
 # network: every "remote" is a bare repo in the same temporary directory, and
 # the one unreachable remote is a port on this machine that nothing answers.
 #
-# Usage: test/repoStatus-test.sh
+# Usage: test/rst-test.sh
 #
 # Each check prints ok or FAIL. When any check fails, the output it was
 # checking is printed at the end, and the script exits non-zero.
 
 set -u
 
-repoStatus="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/repoStatus"
+rst="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/rst"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 cd "$work" || exit 1
@@ -137,8 +137,8 @@ expect_exit() {
 
 date='[A-Z][a-z]{2} [0-9]{2} [0-9]{2}:[0-9]{2}'
 
-echo "== repoStatus repos"
-status="$("$repoStatus" repos 2>&1)"
+echo "== rst repos"
+status="$("$rst" repos 2>&1)"
 status_exit=$?
 expect '^clean +main +up to date +clean$' "$status" "an up-to-date clean repo"
 expect '^ahead +main +ahead 2 +clean$' "$status" "a repo that is ahead"
@@ -170,8 +170,8 @@ expect '^\(ahead and behind are as of' "$status" "the reminder that nothing was 
 expect_not $'\033' "$status" "no colour codes when not writing to a terminal"
 expect_exit "$status_exit" 1 "status exits 1 when a pull is blocked"
 
-echo "== repoStatus -f repos"
-fetched="$("$repoStatus" -f repos 2>&1)"
+echo "== rst -f repos"
+fetched="$("$rst" -f repos 2>&1)"
 fetched_exit=$?
 expect '^unreachable +main +up to date +clean$' "$fetched" "the unreachable repo is still reported"
 expect '^ +fetch failed: cannot reach 127.0.0.1: the connection was refused$' "$fetched" "and its fetch failure is explained"
@@ -179,8 +179,8 @@ expect '^clean +main +up to date +clean$' "$fetched" "the other repos are fetche
 expect_not '^\(ahead and behind are as of' "$fetched" "no reminder after fetching"
 expect_exit "$fetched_exit" 1 "status -f exits 1 when a fetch fails"
 
-echo "== repoStatus pull repos"
-pulled="$("$repoStatus" pull repos 2>&1)"
+echo "== rst pull repos"
+pulled="$("$rst" pull repos 2>&1)"
 pulled_exit=$?
 expect '^behind +pulled 1 commit\(s\)$' "$pulled" "the repo that was behind is pulled"
 expect '^diverged +failed: main has diverged from origin/main, so it cannot fast-forward$' "$pulled" "the diverged repo fails"
@@ -199,8 +199,8 @@ else
 	failures=$((failures + 1))
 fi
 
-echo "== repoStatus push repos (without -y, and without a terminal)"
-asked="$("$repoStatus" push repos 2>&1 </dev/null)"
+echo "== rst push repos (without -y, and without a terminal)"
+asked="$("$rst" push repos 2>&1 </dev/null)"
 asked_exit=$?
 expect '^ahead: 2 commit\(s\) to push to origin/main$' "$asked" "the repo that is ahead is listed"
 expect '^dirty has 1 staged change\(s\) that are not committed, so a push leaves them out\.$' "$asked" "staged changes are pointed out"
@@ -217,8 +217,8 @@ else
 	failures=$((failures + 1))
 fi
 
-echo "== repoStatus push -y repos"
-pushed="$("$repoStatus" push -y repos 2>&1)"
+echo "== rst push -y repos"
+pushed="$("$rst" push -y repos 2>&1)"
 pushed_exit=$?
 expect '^ahead +pushed$' "$pushed" "the repo that is ahead is pushed"
 expect '^many-ahead +pushed$' "$pushed" "so is the one with many commits"
@@ -230,8 +230,8 @@ else
 	failures=$((failures + 1))
 fi
 
-echo "== repoStatus repos, afterwards"
-after="$("$repoStatus" repos 2>&1)"
+echo "== rst repos, afterwards"
+after="$("$rst" repos 2>&1)"
 expect '^ahead +main +up to date +clean$' "$after" "the pushed repo is up to date"
 expect '^behind +main +up to date +clean$' "$after" "the pulled repo is up to date"
 
